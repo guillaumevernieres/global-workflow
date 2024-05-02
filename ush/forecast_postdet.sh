@@ -531,7 +531,11 @@ CICE_postdet() {
     else
       restart_date="${current_cycle}"
     fi
-    cice_restart_file="${COM_ICE_RESTART_PREV}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model.res.nc"
+    if [[ "${DO_JEDIOCNVAR:-NO}" = "YES" ]]; then
+        cice_restart_file="${COM_ICE_ANALYSIS}/${PDY}.${cyc}0000.cice_model_anl.res.nc"
+    else
+        cice_restart_file="${COM_ICE_RESTART_PREV}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model.res.nc"
+    fi
   fi
 
   # Copy CICE ICs
