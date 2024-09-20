@@ -50,9 +50,9 @@ class MarineAnalysis(Task):
         _window_begin = add_to_datetime(self.task_config.current_cycle, -to_timedelta(f"{self.task_config.assim_freq}H") / 2)
         _window_end = add_to_datetime(self.task_config.current_cycle, to_timedelta(f"{self.task_config.assim_freq}H") / 2)
 
-        # compute the relative path from self.task_config.DATA to self.task_config.DATAenspert
+        # compute the relative path from self.task_config.DATA to self.task_config.DATAens
         if self.task_config.NMEM_ENS > 0:
-            _enspert_relpath = os.path.relpath(self.task_config.DATAenspert, self.task_config.DATA)
+            _enspert_relpath = os.path.relpath(self.task_config.DATAens, self.task_config.DATA)
         else:
             _enspert_relpath = None
 
@@ -109,10 +109,10 @@ class MarineAnalysis(Task):
         os.symlink('../staticb', 'staticb')
 
         # hybrid EnVAR case
-        if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 2:
-            # stage ensemble membersfiles for use in hybrid background error
-            logger.debug(f"Stage ensemble members for the hybrid background error")
-            mdau.stage_ens_mem(self.task_config)
+        #if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 2:
+        #    # stage ensemble membersfiles for use in hybrid background error
+        #    logger.debug(f"Stage ensemble members for the hybrid background error")
+        #    mdau.stage_ens_mem(self.task_config)
 
         # prepare the yaml configuration to run the SOCA variational application
         self._prep_variational_yaml()
