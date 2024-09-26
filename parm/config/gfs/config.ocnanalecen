@@ -8,4 +8,6 @@ echo "BEGIN: config.ocnanalecen"
 # Get task specific resources
 . "${EXPDIR}/config.resources" ocnanalecen
 
+export COPY_ENS_ICE_RST_YAML_TMPL="${PARMgfs}/gdas/soca/ensda/copy_ens_ice_rst.yaml.j2"
+
 echo "END: config.ocnanalecen"

@@ -14,5 +14,6 @@ arguments:
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   idate: 2021063000
   edate: 2021070306
-  icsdir: /scratch1/NCEPDEV/climate/Jessica.Meixner/cycling/IC_2021063000_V2
+  #icsdir: /scratch1/NCEPDEV/climate/Jessica.Meixner/cycling/IC_2021063000_V2
+  icsdir:  /scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/ICSDIR/C384O025
   yaml: {{ HOMEgfs }}/ci/cases/gfsv17/ocnanal.yaml
