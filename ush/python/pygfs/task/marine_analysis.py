@@ -138,8 +138,8 @@ class MarineAnalysis(Task):
 
         obs_files = []
         for ob in obs_list_config['observations']['observers']:
-            logger.info(f"******** {self.task_config.OPREFIX}{ob['obs space']['name'].lower()}.{to_YMD(self.task_config.PDY)}{self.task_config.cyc}.nc4")
-            obs_files.append(f"{self.task_config.OPREFIX}{ob['obs space']['name'].lower()}.{to_YMD(self.task_config.PDY)}{self.task_config.cyc}.nc4")
+            logger.info(f"******** {self.task_config.OPREFIX}{ob['obs space']['name'].lower()}.{to_YMD(self.task_config.PDY)}{self.task_config.cyc:02d}.nc4")
+            obs_files.append(f"{self.task_config.OPREFIX}{ob['obs space']['name'].lower()}.{to_YMD(self.task_config.PDY)}{self.task_config.cyc:02d}.nc4")
         obs_list = []
 
         # copy obs from COM_OBS to DATA/obs
@@ -203,7 +203,7 @@ class MarineAnalysis(Task):
         envconfig_jcb['PARMgfs'] = self.task_config.PARMgfs
         envconfig_jcb['nmem_ens'] = self.task_config.NMEM_ENS
         envconfig_jcb['berror_model'] = 'marine_background_error_static_diffusion'
-        if self.task_config.NMEM_ENS > 3:
+        if self.task_config.NMEM_ENS >= 3:
             envconfig_jcb['berror_model'] = 'marine_background_error_hybrid_diffusion_diffusion'
         envconfig_jcb['DATA'] = self.task_config.DATA
         envconfig_jcb['OPREFIX'] = self.task_config.OPREFIX

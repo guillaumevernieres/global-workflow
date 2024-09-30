@@ -6,14 +6,15 @@ arguments:
   pslot: {{ 'pslot' | getenv }}
   app: S2S
   resdetatmos: 384
+  resensatmos: 192
   resdetocean: 0.25
-  nens: 0
-  gfs_cyc: 4
-  start: cold
+  nens: 3
+  gfs_cyc: 0
+  start: warm #cold
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
-  idate: 2021063000
+  idate: 2021063018
   edate: 2021070306
   #icsdir: /scratch1/NCEPDEV/climate/Jessica.Meixner/cycling/IC_2021063000_V2
-  icsdir:  /scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/ICSDIR/C384O025
+  icsdir:  /scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/prepics/hybrid-test
   yaml: {{ HOMEgfs }}/ci/cases/gfsv17/ocnanal.yaml
