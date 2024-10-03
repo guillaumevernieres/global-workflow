@@ -5,6 +5,7 @@ base:
   DO_JEDIOCNVAR: "NO"
   DO_JEDISNOWDA: "NO"
   DO_MERGENSST: "NO"
+  DO_STARTMEM_FROM_JEDIICE: "NO"
   DO_GOES: "NO"
   DO_BUFRSND: "NO"
   DO_GEMPAK: "NO"
@@ -43,7 +44,7 @@ atmensanlobs:
 
 atmensanlsol:
   JCB_ALGO_YAML: "${PARMgfs}/gdas/atm/jcb-prototype_lgetkf_solver.yaml.j2"
-  
+
 aeroanl:
   IO_LAYOUT_X: 1
   IO_LAYOUT_Y: 1

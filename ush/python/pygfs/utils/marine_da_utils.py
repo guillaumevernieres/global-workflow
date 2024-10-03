@@ -87,7 +87,6 @@ def test_hist_date(histfile: str, ref_date: datetime) -> None:
     hist_date = dparser.parse(ncf.variables['time'].units, fuzzy=True) + timedelta(hours=int(ncf.variables['time'][0]))
     ncf.close()
     logger.info(f"*** history file date: {hist_date} expected date: {ref_date}")
-
     if hist_date != ref_date:
         raise ValueError(f"FATAL ERROR: Inconsistent bkg date'")
 
