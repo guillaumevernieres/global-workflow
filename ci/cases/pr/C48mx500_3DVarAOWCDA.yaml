@@ -11,7 +11,8 @@ arguments:
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
   expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
   #icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C48mx500/20240610
-  icsdir: /scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/prepics/ictest/
+  icsdir: /work/noaa/da/gvernier/ensda/ictest
+  #icsdir: /scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/prepics/ictest/
   #/scratch1/NCEPDEV/da/Andrew.Eichmann/ICSDIR/C48mx500ens
   idate: 2021032418
   edate: 2021032500

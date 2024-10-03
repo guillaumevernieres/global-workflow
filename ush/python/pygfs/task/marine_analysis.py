@@ -69,7 +69,8 @@ class MarineAnalysis(Task):
                 'MARINE_WINDOW_MIDDLE_ISO': self.task_config.current_cycle.strftime('%Y-%m-%dT%H:%M:%SZ'),
                 'ENSPERT_RELPATH': _enspert_relpath,
                 'CALC_SCALE_EXEC': _calc_scale_exec,
-                'OPREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z."
+                'OPREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z.",
+                'APREFIX': f"{self.task_config.RUN}.t{self.task_config.cyc:02d}z."
             }
         )
 
@@ -110,11 +111,14 @@ class MarineAnalysis(Task):
         os.symlink('../staticb', 'staticb')
 
         # hybrid EnVAR case
-
-        #if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS > 2:
-        #    # stage ensemble membersfiles for use in hybrid background error
-        #    logger.debug(f"Stage ensemble members for the hybrid background error")
-        #    mdau.stage_ens_mem(self.task_config)
+        if self.task_config.DOHYBVAR == "YES" or self.task_config.NMEM_ENS >= 3:
+            # stage the ensemble weights
+            logger.debug(f"Stage ensemble weights for the hybrid background error")
+            FileHandler({'copy': [[os.path.join(self.task_config.COMIN_OCEAN_BMATRIX, f'{self.task_config.APREFIX}ocean.ens_weights.nc'),
+                                   os.path.join(self.task_config.DATA, 'ocean.ens_weights.nc')],
+                                  [os.path.join(self.task_config.COMIN_ICE_BMATRIX, f'{self.task_config.APREFIX}ice.ens_weights.nc'),
+                                   os.path.join(self.task_config.DATA, 'ice.ens_weights.nc')]
+                                   ]}).sync()
 
         # prepare the yaml configuration to run the SOCA variational application
         self._prep_variational_yaml()
@@ -220,12 +224,15 @@ class MarineAnalysis(Task):
         jcb_base_yaml = os.path.join(self.task_config.PARMsoca, 'marine-jcb-base.yaml')
         jcb_algo_yaml = os.path.join(self.task_config.PARMsoca, 'marine-jcb-3dfgat.yaml.j2')
 
-        jcb_base_config = YAMLFile(path=jcb_base_yaml)
-        jcb_base_config = Template.substitute_structure(jcb_base_config, TemplateConstants.DOUBLE_CURLY_BRACES, envconfig_jcb.get)
-        jcb_base_config = Template.substitute_structure(jcb_base_config, TemplateConstants.DOLLAR_PARENTHESES, envconfig_jcb.get)
-        jcb_algo_config = YAMLFile(path=jcb_algo_yaml)
-        jcb_algo_config = Template.substitute_structure(jcb_algo_config, TemplateConstants.DOUBLE_CURLY_BRACES, envconfig_jcb.get)
-        jcb_algo_config = Template.substitute_structure(jcb_algo_config, TemplateConstants.DOLLAR_PARENTHESES, envconfig_jcb.get)
+        jcb_base_config = parse_j2yaml(path=jcb_base_yaml, data=envconfig_jcb)
+        jcb_algo_config = parse_j2yaml(path=jcb_algo_yaml, data=envconfig_jcb)
+
+        #jcb_base_config = YAMLFile(path=jcb_base_yaml)
+        #jcb_base_config = Template.substitute_structure(jcb_base_config, TemplateConstants.DOUBLE_CURLY_BRACES, envconfig_jcb.get)
+        #jcb_base_config = Template.substitute_structure(jcb_base_config, TemplateConstants.DOLLAR_PARENTHESES, envconfig_jcb.get)
+        #jcb_algo_config = YAMLFile(path=jcb_algo_yaml)
+        #jcb_algo_config = Template.substitute_structure(jcb_algo_config, TemplateConstants.DOUBLE_CURLY_BRACES, envconfig_jcb.get)
+        #jcb_algo_config = Template.substitute_structure(jcb_algo_config, TemplateConstants.DOLLAR_PARENTHESES, envconfig_jcb.get)
 
         # Override base with the application specific config
         jcb_config = {**jcb_base_config, **jcb_algo_config}
@@ -382,12 +389,10 @@ class MarineAnalysis(Task):
                                    os.path.join(com_ocean_analysis, f'{RUN}.t{cyc}z.{domain}ana.nc')])
 
         # Copy of the ssh diagnostics
-        '''
         if nmem_ens > 2:
             for string in ['ssh_steric_stddev', 'ssh_unbal_stddev', 'ssh_total_stddev', 'steric_explained_variance']:
-                post_file_list.append([os.path.join(anl_dir, 'static_ens', f'ocn.{string}.incr.{bdate}.nc'),
+                post_file_list.append([os.path.join(anl_dir, 'staticb', f'ocn.{string}.incr.{bdate}.nc'),
                                        os.path.join(com_ocean_analysis, f'{RUN}.t{cyc}z.ocn.{string}.nc')])
-        '''
 
         # Copy DA grid (computed for the start of the window)
         post_file_list.append([os.path.join(anl_dir, 'soca_gridspec.nc'),
