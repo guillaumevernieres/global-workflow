@@ -673,8 +673,10 @@ class GFSTasks(Tasks):
         data = f'{ocean_hist_path}/gdas.ocean.t@Hz.inst.f009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': f'{self.run}fcst', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
-        deps.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.do_hybvar:
+            dep_dict = {'type': 'metatask', 'name': 'enkfgdasfcst', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('marinebmat')
@@ -2730,6 +2732,8 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'metatask', 'name': f'{self.run}ecmn'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}esfc'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{self.run}ocnanalecen'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         dep_dict = {'type': 'task', 'name': f'{self.run}stage_ic'}

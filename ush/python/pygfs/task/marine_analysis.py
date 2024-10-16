@@ -118,7 +118,7 @@ class MarineAnalysis(Task):
                                    os.path.join(self.task_config.DATA, 'ocean.ens_weights.nc')],
                                   [os.path.join(self.task_config.COMIN_ICE_BMATRIX, f'{self.task_config.APREFIX}ice.ens_weights.nc'),
                                    os.path.join(self.task_config.DATA, 'ice.ens_weights.nc')]
-                                   ]}).sync()
+                                 ]}).sync()
 
         # prepare the yaml configuration to run the SOCA variational application
         self._prep_variational_yaml()
