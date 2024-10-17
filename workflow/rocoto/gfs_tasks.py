@@ -2733,7 +2733,7 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}_esfc'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run.replace('enkf', '')}_ocnanalecen'}
+        dep_dict = {'type': 'task', 'name': f'{self.run.replace("enkf", "")}_ocnanalecen'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
