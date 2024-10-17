@@ -674,7 +674,7 @@ class GFSTasks(Tasks):
         dep_dict = {'type': 'data', 'data': data, 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_hybvar:
-            dep_dict = {'type': 'metatask', 'name': 'enkfgdasfcst', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
+            dep_dict = {'type': 'metatask', 'name': 'enkfgdas_fcst', 'offset': f"-{timedelta_to_HMS(self._base['cycle_interval'])}"}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -2733,7 +2733,7 @@ class GFSTasks(Tasks):
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.run}_esfc'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.run}ocnanalecen'}
+        dep_dict = {'type': 'task', 'name': f'{self.run.replace('enkf', '')}_ocnanalecen'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         dep_dict = {'type': 'task', 'name': f'{self.run}_stage_ic'}
