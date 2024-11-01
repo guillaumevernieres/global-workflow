@@ -138,7 +138,7 @@ class MarineAnalysis(Task):
         obs_files = []
         for ob in obs_list_config['observations']['observers']:
             logger.info(f"******** {self.task_config.OPREFIX}{ob['obs space']['name'].lower()}.{to_YMD(self.task_config.PDY)}{self.task_config.cyc}.nc4")
-            obs_files.append(f"{self.task_config.OPREFIX}{ob['obs space']['name'].lower()}.{to_YMD(self.task_config.PDY)}{self.task_config.cyc}.nc4")
+            obs_files.append(f"{self.task_config.OPREFIX}{ob['obs space']['name'].lower()}.{to_YMD(self.task_config.PDY)}{self.task_config.cyc:02d}.nc4")
         obs_list = []
 
         # copy obs from COM_OBS to DATA/obs
@@ -210,7 +210,7 @@ class MarineAnalysis(Task):
         envconfig_jcb['cyc'] = os.getenv('cyc')
         envconfig_jcb['SOCA_NINNER'] = self.task_config.SOCA_NINNER
         envconfig_jcb['obs_list'] = ['adt_rads_all']
-        envconfig_jcb['MOM6_LEVS'] = mdau.get_mom6_levels(str(self.task_config.OCNRES))
+        envconfig_jcb['MOM6_LEVS'] = mdau.get_mom6_levels(str(self.task_config.OCNRES).zfill(3))
 
         # Write obs_list_short
         save_as_yaml(parse_obs_list_file(self.task_config.MARINE_OBS_LIST_YAML), 'obs_list_short.yaml')
