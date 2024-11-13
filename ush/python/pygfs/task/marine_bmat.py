@@ -288,10 +288,10 @@ class MarineBMat(Task):
                                 f"{self.task_config.APREFIX}{diff_type}_ocean.nc")
             diffusion_coeff_list.append([src, dest])
 
-        src = os.path.join(self.task_config.DATAstaticb, f"hz_ice.nc")
-        dest = os.path.join(self.task_config.COMOUT_ICE_BMATRIX,
-                            f"{self.task_config.APREFIX}hz_ice.nc")
-        diffusion_coeff_list.append([src, dest])
+        #src = os.path.join(self.task_config.DATAstaticb, f"hz_ice.nc")
+        #dest = os.path.join(self.task_config.COMOUT_ICE_BMATRIX,
+        #                    f"{self.task_config.APREFIX}hz_ice.nc")
+        #diffusion_coeff_list.append([src, dest])
 
         FileHandler({'copy': diffusion_coeff_list}).sync()
 
