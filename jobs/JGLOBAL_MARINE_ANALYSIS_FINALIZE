@@ -29,7 +29,9 @@ mkdir -p "${COMOUT_ICE_RESTART}"
 ###############################################################
 # Run relevant script
 ###############################################################
-
+module purge
+module use /work/noaa/da/gvernier/runs/global-workflow/sorc/gdas.cd/modulefiles
+module load GDAS/hercules.gnu
 EXSCRIPT=${GDASMARINEANALYSIS:-${SCRgfs}/exglobal_marine_analysis_finalize.py}
 ${EXSCRIPT}
 status=$?

@@ -46,7 +46,9 @@ mkdir -p "${COMOUT_ICE_BMATRIX}"
 
 ###############################################################
 # Run relevant script
-
+module purge
+module use /work/noaa/da/gvernier/runs/global-workflow/sorc/gdas.cd/modulefiles
+module load GDAS/hercules.gnu
 EXSCRIPT=${GDASMARINEBMATRUNPY:-${SCRgfs}/exglobal_marinebmat.py}
 ${EXSCRIPT}
 status=$?

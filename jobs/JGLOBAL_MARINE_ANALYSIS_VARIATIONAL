@@ -19,7 +19,9 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "marineanlvar" -c "base marineanl mari
 
 ###############################################################
 # Run relevant script
-
+module purge
+module use /work/noaa/da/gvernier/runs/global-workflow/sorc/gdas.cd/modulefiles
+module load GDAS/hercules.gnu
 EXSCRIPT=${GDASMARINERUNSH:-${SCRgfs}/exglobal_marine_analysis_variational.py}
 ${EXSCRIPT}
 status=$?
