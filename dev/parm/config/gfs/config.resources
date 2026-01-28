@@ -14,6 +14,7 @@ if (( $# != 1 )); then
     echo "stage_ic aerosol_init fetch"
     echo "prep prep_sfc"
     echo "atmanlinit atmanlvar atmanlfv3inc atmanlfinal"
+    echo "coupledanlinit"
     echo "atmensanlinit atmensanlobs atmensanlsol atmensanlletkf atmensanlfv3inc atmensanlfinal ecen_fv3jedi analcalc_fv3jedi"
     echo "snowanl esnowanl"
     echo "aeroanlinit aeroanlvar aeroanlfinal aeroanlgenb"
@@ -241,6 +242,44 @@ case ${step} in
     threads_per_task=1
     tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     memory="4GB"
+    ;;
+
+  "coupledanlinit")
+    export layout_x=${layout_x_atmanl}
+    export layout_y=${layout_y_atmanl}
+
+    export layout_gsib_x=$(( layout_x * 3 ))
+    export layout_gsib_y=$(( layout_y * 2 ))
+
+    walltime="00:30:00"
+    case ${CASE} in
+      "C768")
+        ntasks=120
+        memory="180GB"
+        ;;
+      "C384")
+        ntasks=80
+        memory="120GB"
+        ;;
+      "C192")
+        ntasks=60
+        memory="90GB"
+        ;;
+      "C96")
+        ntasks=40
+        memory="60GB"
+        ;;
+      "C48")
+        ntasks=20
+        memory="30GB"
+        ;;
+      *)
+        ntasks=40
+        memory="60GB"
+        ;;
+    esac
+    threads_per_task=1
+    tasks_per_node=$(( max_tasks_per_node / threads_per_task ))
     ;;
 
   "atmanlvar")

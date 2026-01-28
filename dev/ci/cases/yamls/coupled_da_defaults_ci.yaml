@@ -1,0 +1,32 @@
+defaults:
+  !INC {{ HOMEgfs }}/dev/parm/config/gfs/yaml/defaults.yaml
+base:
+  DO_JEDIATMVAR: "YES"
+  DO_JEDIOCNVAR: "YES"
+  DO_COUPLED_DA: "YES"
+  DOIAU: "NO"
+  DO_METP: "NO"
+  CASE_ANL: "C48"
+  USE_IODADIR: "YES"
+  DO_TEST_MODE: "NO"
+
+atmanl:
+  LAYOUT_X_ATMANL: 1
+  LAYOUT_Y_ATMANL: 1
+
+marineanl:
+  SOCA_NINNER: 1
+  DO_TEST_MODE: "NO"
+  JCB_ALGO_YAML_VAR: "{{ HOMEgfs }}/sorc/gdas.cd/test/gw-ci/soca/jcb-prototype_3dfgat_3DVarAOWCDA.yaml.j2"
+
+coupledanl:
+  # Coupled DA configuration
+  # Inherits from both atmanl and marineanl
+  # Enables simultaneous atmosphere-marine DA initialization
+
+prepatmiodaobs:
+  DO_CONVERT_IODA: "YES"
+
+prepoceanobs:
+  DO_CONVERT_IODA: "YES"
+

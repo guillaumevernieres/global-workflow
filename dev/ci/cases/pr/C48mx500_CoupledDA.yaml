@@ -1,0 +1,78 @@
+experiment:
+  net: gfs
+  mode: cycled
+  pslot: {{ 'pslot' | getenv }}
+  app: S2SW
+  resdetatmos: 48
+  resdetocean: 5.0
+  comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
+  expdir: {{ 'RUNTESTS' | getenv }}/EXPDIR
+  icsdir: {{ 'ICSDIR_ROOT' | getenv }}/C48mx500/20250808
+  idate: 2021032418
+  edate: 2021032500
+  nens: 0
+  interval: 6
+  start: warm
+  yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/coupled_da_defaults_ci.yaml
+
+skip_ci_on_hosts:
+  - gaeac5
+  - orion
+  - awsepicglobalworkflow
+
+workflow:
+  engine: rocoto
+  rocoto:
+    maxtries: 2
+    cyclethrottle: 3
+    taskthrottle: 25
+    verbosity: 2
+
+config:
+  base:
+    DO_JEDIATMVAR: "YES"
+    DO_JEDIOCNVAR: "YES"
+    DO_COUPLED_DA: "YES"
+    DOHYBVAR: "NO"
+    NMEM_ENS: 0
+
+  prep:
+    DOIAU: "NO"
+
+  prepoceanobs:
+    DMPDIR: "{{ 'DMPDIR' | getenv }}"
+
+  atmanl:
+    LAYOUT_X_ATMANL: 1
+    LAYOUT_Y_ATMANL: 1
+
+  coupledanlinit:
+    # Coupled DA initialization configuration
+    # Uses both atmosphere and marine analysis initialization
+
+  marineanl:
+    SOCA_NINNER: 10
+    CASE_ANL: C48
+    OCNRES: 5
+    LAYOUT_X: 1
+    LAYOUT_Y: 1
+
+  fcst:
+    CASE: C48
+    CASE_ENS: C48
+    OCNRES: 5
+    layout_x: 2
+    layout_y: 2
+    WRITE_DOPOST: ".true."
+
+verification:
+  rocotostat:
+    cycles:
+      - 2021032418
+      - 2021032500
+    metatasks:
+      - gdas_prep
+      - gdas_prepoceanobs
+      - gdas_coupledanlinit
+      - gdas_fcst
+      - gdas_oceanice_products

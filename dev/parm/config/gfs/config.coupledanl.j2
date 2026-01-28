@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+########## config.coupledanl ##########
+# Configuration for coupled atmosphere-marine DA initialization
+
+echo "BEGIN: config.coupledanl"
+
+# Enable coupled DA mode
+export DO_COUPLED_DA="YES"
+
+# Task configuration YAML
+export TASK_CONFIG_YAML="${PARMgfs}/gdas/coupled/coupled_da_config.yaml.j2"
+
+echo "END: config.coupledanl"
