@@ -78,6 +78,8 @@ class Stage(Task):
             config_vars['START_ICE_FROM_ANA'] = False
             if self.task_config.get("DO_JEDIOCNVAR", False) and self.task_config.RUN == "gdas":
                 config_vars['START_ICE_FROM_ANA'] = True
+            if self.task_config.get("DO_JEDICOUPLEDVAR", False) and self.task_config.RUN == "gdas":
+                config_vars['START_ICE_FROM_ANA'] = True
             if self.task_config.get("DO_STARTMEM_FROM_JEDIICE", False) and self.task_config.RUN == "enkfgdas":
                 config_vars['START_ICE_FROM_ANA'] = True
 

@@ -1,11 +1,16 @@
 defaults:
   !INC {{ HOMEgfs }}/dev/parm/config/gfs/yaml/defaults.yaml
 base:
-  DO_JEDIATMVAR: "YES"
-  DO_JEDIOCNVAR: "YES"
-  DO_COUPLED_DA: "YES"
-  DOIAU: "NO"
+  DO_JEDIATMVAR: "NO"
+  DO_JEDIOCNVAR: "NO"
+  DO_JEDICOUPLEDVAR: "YES"
+  #DOIAU: "NO"
   DO_METP: "NO"
+  DO_FIT2OBS: "NO"
+  DO_VERFOZN: "NO"
+  DO_VERFRAD: "NO"
+  DO_ATMOS_PRODUCTS: "NO"
+  DO_WAVE: "NO"
   CASE_ANL: "C48"
   USE_IODADIR: "YES"
   DO_TEST_MODE: "NO"
@@ -20,13 +25,10 @@ marineanl:
   JCB_ALGO_YAML_VAR: "{{ HOMEgfs }}/sorc/gdas.cd/test/gw-ci/soca/jcb-prototype_3dfgat_3DVarAOWCDA.yaml.j2"
 
 coupledanl:
-  # Coupled DA configuration
-  # Inherits from both atmanl and marineanl
-  # Enables simultaneous atmosphere-marine DA initialization
+  # Coupled DA configuration - enables simultaneous atmosphere-marine DA initialization
+  DO_JEDICOUPLEDVAR: "YES"
 
 prepatmiodaobs:
   DO_CONVERT_IODA: "YES"
 
-prepoceanobs:
-  DO_CONVERT_IODA: "YES"
 

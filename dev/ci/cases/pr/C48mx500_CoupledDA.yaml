@@ -2,7 +2,7 @@ experiment:
   net: gfs
   mode: cycled
   pslot: {{ 'pslot' | getenv }}
-  app: S2SW
+  app: S2S
   resdetatmos: 48
   resdetocean: 5.0
   comroot: {{ 'RUNTESTS' | getenv }}/COMROOT
@@ -11,7 +11,7 @@ experiment:
   idate: 2021032418
   edate: 2021032500
   nens: 0
-  interval: 6
+  interval: 0
   start: warm
   yaml: {{ HOMEgfs }}/dev/ci/cases/yamls/coupled_da_defaults_ci.yaml
 
@@ -30,11 +30,16 @@ workflow:
 
 config:
   base:
-    DO_JEDIATMVAR: "YES"
-    DO_JEDIOCNVAR: "YES"
-    DO_COUPLED_DA: "YES"
+    DO_JEDIATMVAR: "NO"
+    DO_JEDIOCNVAR: "NO"
+    DO_JEDICOUPLEDVAR: "YES"
     DOHYBVAR: "NO"
     NMEM_ENS: 0
+    DO_FIT2OBS: "NO"
+    DO_VERFOZN: "NO"
+    DO_VERFRAD: "NO"
+    DO_ATMOS_PRODUCTS: "NO"
+    DO_WAVE: "NO"
 
   prep:
     DOIAU: "NO"
@@ -46,8 +51,8 @@ config:
     LAYOUT_X_ATMANL: 1
     LAYOUT_Y_ATMANL: 1
 
-  coupledanlinit:
-    # Coupled DA initialization configuration
+  jedicoupledvarinit:
+    # JEDI coupled variational DA initialization configuration
     # Uses both atmosphere and marine analysis initialization
 
   marineanl:
@@ -73,6 +78,6 @@ verification:
     metatasks:
       - gdas_prep
       - gdas_prepoceanobs
-      - gdas_coupledanlinit
+      - gdas_jedicoupledvarinit
       - gdas_fcst
       - gdas_oceanice_products

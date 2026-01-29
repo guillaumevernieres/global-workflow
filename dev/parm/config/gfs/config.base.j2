@@ -371,6 +371,7 @@ export DO_JEDIATMVAR="{{ DO_JEDIATMVAR }}"
 export DO_JEDIATMENS="{{ DO_JEDIATMENS }}"
 export DO_JEDIATMENS_SPLIT_OBSSOL="{{ DO_JEDIATMENS_SPLIT_OBSSOL }}" #Only used if DO_JEDIATMENS is "YES"
 export DO_JEDIOCNVAR="{{ DO_JEDIOCNVAR }}"
+export DO_JEDICOUPLEDVAR="{{ DO_JEDICOUPLEDVAR }}"
 export DO_JEDISNOWDA="{{ DO_JEDISNOWDA }}"
 export DO_MERGENSST="{{ DO_MERGENSST }}"
 
@@ -513,6 +514,14 @@ if [[ "${DO_JEDIATMVAR}" = "YES" ]]; then
    export DO_VMINMON="NO"     # GSI minimization monitoring
 fi
 
+# The monitor jobs are also not supported for JEDICOUPLEDVAR.
+if [[ "${DO_JEDICOUPLEDVAR}" = "YES" ]]; then
+   export DO_FIT2OBS="NO"     # Run fit to observations package
+   export DO_VERFOZN="NO"     # Ozone data assimilation monitoring
+   export DO_VERFRAD="NO"     # Radiance data assimilation monitoring
+   export DO_VMINMON="NO"     # GSI minimization monitoring
+fi
+
 # TODO: Enable METplus on Ursa when verif-global has been upgraded to spack-stack 1.9.x+
 # TODO: Clean this up by allowing DO_METP to be system-specific and/or allow overriding that parameter
 if [[ "${machine}" == "URSA" || "${machine}" == "GAEAC6" || "${machine}" == "ORION" || "${machine}" == "HERCULES" ]]; then
@@ -532,6 +541,11 @@ if [[ "${DO_JEDIATMVAR}" == "YES" ]]; then
     else
 	    export ATMINC_GRID="gaussian"
     fi
+fi
+
+# Set JEDI atmospheric DA increment type for coupled DA
+if [[ "${DO_JEDICOUPLEDVAR}" == "YES" ]]; then
+    export ATMINC_GRID="gaussian"
 fi
 
 echo "END: config.base"

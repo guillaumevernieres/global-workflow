@@ -27,7 +27,7 @@ if (( $# != 1 )); then
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak npoess"
-    echo "marineanlinit prepoceanobs marinebmatinit marinebmat marineanlvar marineanlecen marineanalletkf marineanlchkpt marineanlfinal ocnanalvrfy"
+    echo "marineanlinit prepoceanobs marinebmatinit marinebmat marineanlvar marineanlecen marineanalletkf marineanlchkpt marineanlfinal ocnanalvrfy jedicoupledvarinit"
     exit 1
 
 fi
@@ -565,6 +565,14 @@ case ${step} in
     threads_per_task=1
     is_exclusive=True
     tasks_per_node=$(( max_tasks_per_node / 2 ))
+    ;;
+
+  "jedicoupledvarinit")
+    walltime="00:15:00"
+    ntasks=1
+    threads_per_task=1
+    tasks_per_node=${max_tasks_per_node}
+    memory="24GB"
     ;;
 
   "marineanlvar")

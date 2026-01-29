@@ -76,10 +76,14 @@ class GFSCycledAppConfig(AppConfig):
             run_options[run]['do_letkf_ocn'] = base.get('DOLETKF_OCN', False)
             run_options[run]['nens'] = base.get('NMEM_ENS', 0)
             run_options[run]['do_fit2obs'] = base.get('DO_FIT2OBS', True)
+            run_options[run]['do_verfozn'] = base.get('DO_VERFOZN', True)
+            run_options[run]['do_verfrad'] = base.get('DO_VERFRAD', True)
+            run_options[run]['do_atmos_products'] = base.get('DO_ATMOS_PRODUCTS', True)
             run_options[run]['do_jediatmvar'] = base.get('DO_JEDIATMVAR', False)
             run_options[run]['do_jediatmens'] = base.get('DO_JEDIATMENS', False)
             run_options[run]['do_jediatmens_split_obssol'] = base.get('DO_JEDIATMENS_SPLIT_OBSSOL', True)
             run_options[run]['do_jediocnvar'] = base.get('DO_JEDIOCNVAR', False)
+            run_options[run]['do_jedicoupledvar'] = base.get('DO_JEDICOUPLEDVAR', False)
             run_options[run]['do_jedisnowda'] = base.get('DO_JEDISNOWDA', False)
             run_options[run]['do_gsisoilda'] = base.get('DO_GSISOILDA', False)
             run_options[run]['do_mergensst'] = base.get('DO_MERGENSST', False)
@@ -107,26 +111,37 @@ class GFSCycledAppConfig(AppConfig):
         if options['do_prep_sfc']:
             configs += ['prep_sfc']
 
-        if options['do_jediatmvar']:
-            if options['do_jediatmens']:
-                configs += ['atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc_fv3jedi']
-            else:
-                configs += ['atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc']
+        # For coupled DA, use the coupled task instead of separate atmos/ocean tasks
+        if options['do_jedicoupledvar']:
+            configs += ['prepoceanobs', 'marinebmatinit', 'marinebmat', 'jedicoupledvarinit']
         else:
-            configs += ['anal', 'analdiag', 'analcalc']
+            # Separate atmospheric analysis
+            if options['do_jediatmvar']:
+                if options['do_jediatmens']:
+                    configs += ['atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc_fv3jedi']
+                else:
+                    configs += ['atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc']
+            else:
+                configs += ['anal', 'analdiag', 'analcalc']
 
-        if options['do_jediocnvar']:
-            configs += ['prepoceanobs', 'marinebmatinit', 'marinebmat', 'marineanlinit', 'marineanlvar']
-            if options['do_letkf_ocn']:
-                configs += ['marineanlletkf']
-            if options['do_hybvar']:
-                configs += ['marineanlecen']
-            configs += ['marineanlchkpt', 'marineanlfinal']
+            # Separate marine analysis (only if doing ocean DA but not coupled)
+            if options['do_jediocnvar']:
+                configs += ['prepoceanobs', 'marinebmatinit', 'marinebmat', 'marineanlinit', 'marineanlvar']
+                if options['do_letkf_ocn']:
+                    configs += ['marineanlletkf']
+                if options['do_hybvar']:
+                    configs += ['marineanlecen']
+                configs += ['marineanlchkpt', 'marineanlfinal']
 
         if options['do_ocean'] or options['do_ice']:
             configs += ['oceanice_products']
 
-        configs += ['stage_ic', 'sfcanl', 'fcst', 'upp', 'atmos_products', 'arch_vrfy', 'cleanup']
+        configs += ['stage_ic', 'sfcanl', 'fcst', 'upp']
+
+        if options['do_atmos_products']:
+            configs += ['atmos_products']
+
+        configs += ['arch_vrfy', 'cleanup']
 
         if options['do_archcom']:
             configs += ['arch_tars']
@@ -248,16 +263,23 @@ class GFSCycledAppConfig(AppConfig):
                 task_names[run] += ['prep']
                 if options['do_prep_sfc']:
                     task_names[run] += ['prep_sfc']
-                if options['do_jediatmvar']:
-                    if options['do_jediatmens']:
-                        task_names[run] += ['atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc_fv3jedi']
-                    else:
-                        task_names[run] += ['atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc']
-                else:
-                    task_names[run] += ['anal', 'analcalc']
 
-                if options['do_jediocnvar']:
-                    task_names[run] += ['prepoceanobs', 'marinebmatinit', 'marinebmat', 'marineanlinit', 'marineanlvar', 'marineanlchkpt', 'marineanlfinal']
+                # For coupled DA, skip individual atmos and marine analysis tasks
+                if options['do_jedicoupledvar']:
+                    task_names[run] += ['prepoceanobs', 'marinebmatinit', 'marinebmat', 'jedicoupledvarinit']
+                else:
+                    # Separate atmospheric analysis
+                    if options['do_jediatmvar']:
+                        if options['do_jediatmens']:
+                            task_names[run] += ['atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc_fv3jedi']
+                        else:
+                            task_names[run] += ['atmanlinit', 'atmanlvar', 'atmanlfv3inc', 'atmanlfinal', 'analcalc']
+                    else:
+                        task_names[run] += ['anal', 'analcalc']
+
+                    # Separate marine analysis (only if doing ocean DA but not coupled)
+                    if options['do_jediocnvar']:
+                        task_names[run] += ['prepoceanobs', 'marinebmatinit', 'marinebmat', 'marineanlinit', 'marineanlvar', 'marineanlchkpt', 'marineanlfinal']
 
                 task_names[run] += ['sfcanl']
 
@@ -269,7 +291,7 @@ class GFSCycledAppConfig(AppConfig):
 
                 # gdas- and gfs-specific analysis tasks
                 if run == 'gdas':
-                    if not options['do_jediatmvar']:
+                    if not options['do_jediatmvar'] and not options['do_jedicoupledvar']:
                         task_names[run] += ['analdiag']
 
                     if options['do_wave']:
@@ -289,7 +311,10 @@ class GFSCycledAppConfig(AppConfig):
                 if run == 'gdas':
                     task_names[run] += ['stage_ic']
 
-                task_names[run] += ['atmanlupp', 'atmanlprod', 'fcst']
+                if options['do_atmos_products']:
+                    task_names[run] += ['atmanlupp', 'atmanlprod']
+
+                task_names[run] += ['fcst']
 
                 # gfs-specific products
                 if run == 'gfs':
@@ -301,7 +326,8 @@ class GFSCycledAppConfig(AppConfig):
 
                 if options['do_upp']:
                     task_names[run] += ['atmupp']
-                task_names[run] += ['atmos_prod']
+                if options['do_atmos_products']:
+                    task_names[run] += ['atmos_prod']
 
                 # GOES post-processing (gfs only)
                 if run == 'gfs':

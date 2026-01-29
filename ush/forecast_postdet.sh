@@ -177,7 +177,7 @@ EOF
                 delimiter=""
                 IAU_INC_FILES=""
                 for iaufhr in "${iaufhrs[@]}"; do
-                    if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
+                    if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]] || [[ "${DO_JEDICOUPLEDVAR:-NO}" == "YES" ]]; then
                         for tile in {1..6}; do
                             inc_file="jedi_increment.atm.i$(printf %03i "${iaufhr}").tile${tile}.nc"
                             inc_files+=("${inc_file}")
@@ -194,7 +194,7 @@ EOF
             else # "${DOIAU}" == "NO"
                 read_increment=".true."
 
-                if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
+                if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]] || [[ "${DO_JEDICOUPLEDVAR:-NO}" == "YES" ]]; then
                     inc_files=("jedi_increment.atm.i006.tile1.nc" "jedi_increment.atm.i006.tile2.nc" "jedi_increment.atm.i006.tile3.nc" "jedi_increment.atm.i006.tile4.nc" "jedi_increment.atm.i006.tile5.nc" "jedi_increment.atm.i006.tile6.nc")
                     increment_file_on_native_grid=".true."
                     res_latlon_dynamics="jedi_increment.atm.i006"
@@ -226,7 +226,7 @@ EOF
 
             local increment_file
             for inc_file in "${inc_files[@]}"; do
-                if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]]; then
+                if [[ "${DO_JEDIATMVAR:-NO}" == "YES" ]] || [[ "${DO_JEDICOUPLEDVAR:-NO}" == "YES" ]]; then
                     increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${prefix_atminc}${inc_file}"
                     if [[ "${DO_JEDIATMENS:-NO}" == "NO" ]]; then
                         increment_file="${COMIN_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${prefix_atminc}${inc_file}"
@@ -600,7 +600,7 @@ MOM6_postdet() {
 
     # Copy increment (only when RERUN=NO)
     if [[ "${RERUN}" == "NO" ]]; then
-        if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" ]] || [[ ${MEMBER} -gt 0 && "${ODA_INCUPD:-False}" == "True" ]]; then
+        if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" ]] || [[ "${DO_JEDICOUPLEDVAR:-NO}" == "YES" ]] || [[ ${MEMBER} -gt 0 && "${ODA_INCUPD:-False}" == "True" ]]; then
             cpreq "${COMIN_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.mom6_increment.i006.nc" "${DATA}/INPUT/mom6_increment.nc"
         fi
     fi # if [[ "${RERUN}" == "NO" ]]; then
@@ -734,7 +734,7 @@ CICE_postdet() {
     else # "${RERUN}" == "NO"
         restart_date="${model_start_date_current_cycle}"
         cice_restart_file="${COMIN_ICE_RESTART_PREV}/${restart_date:0:8}.${restart_date:8:2}0000.cice_model.res.nc"
-        if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" ]]; then
+        if [[ "${DO_JEDIOCNVAR:-NO}" == "YES" ]] || [[ "${DO_JEDICOUPLEDVAR:-NO}" == "YES" ]]; then
             if [[ "${MEMBER}" -eq 0 ]]; then
                 # Start the deterministic from the JEDI/SOCA analysis if the Marine DA in ON
                 cice_restart_file="${COMIN_ICE_ANALYSIS}/${restart_date:0:8}.${restart_date:8:2}0000.analysis.cice_model.res.nc"
