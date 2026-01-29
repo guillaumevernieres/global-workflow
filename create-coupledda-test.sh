@@ -8,6 +8,10 @@ set -eu
 #
 # Arguments:
 #   TEST_DIR - Optional. Base directory for the test (default: /scratch3/NCEPDEV/da/${USER}/manual_coupled_da_test_${TAG})
+#
+# Note: If you don't have access to fv3-cpu, export HPC_ACCOUNT before running:
+#   export HPC_ACCOUNT=da-cpu
+#   ./create-coupledda-test.sh
 #####################################################################################
 
 # Determine HOMEgfs from script location
@@ -33,9 +37,6 @@ fi
 
 source dev/ush/gw_setup.sh
 source dev/ci/platforms/config.${MACHINE_ID}
-
-# Set HPC_ACCOUNT after sourcing platform config to ensure it's not overridden
-export HPC_ACCOUNT="${HPC_ACCOUNT:-da-cpu}"
 
 # Configuration
 export TAG=$(git rev-parse --short HEAD)
