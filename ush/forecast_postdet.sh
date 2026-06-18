@@ -652,15 +652,26 @@ MOM6_postdet() {
     cpreq "${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.MOM.res.nc" "${DATA}/INPUT/MOM.res.nc"
     case ${OCNRES} in
         "025")
-            local nn
-            for ((nn = 1; nn <= 4; nn++)); do
-                if [[ -f "${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.MOM.res_${nn}.nc" ]]; then
-                    cpreq "${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.MOM.res_${nn}.nc" "${DATA}/INPUT/MOM.res_${nn}.nc"
-                fi
-            done
+            local nres_files=4
             ;;
-        *) ;;
+        "008")
+            local nres_files=15
+            ;;
+        *)
+            local nres_files=0
+            ;;
     esac
+
+    if (( nres_files > 0 )); then
+        local nn
+        for ((nn = 1; nn <= nres_files; nn++)); do
+            restart_file="${restart_dir}/${restart_date:0:8}.${restart_date:8:2}0000.MOM.res_${nn}.nc"
+
+            if [[ -f "${restart_file}" ]]; then
+                cpreq "${restart_file}" "${DATA}/INPUT/MOM.res_${nn}.nc"
+            fi
+        done
+    fi
 
     # Copy increment (only when RERUN=NO)
     if [[ "${RERUN}" == "NO" ]]; then
@@ -747,15 +758,23 @@ MOM6_out() {
     local mom6_restart_files mom6_restart_file restart_file
     mom6_restart_files=(MOM.res.nc)
     # 1/4 degree resolution has 3 additional restarts
-    case "${OCNRES}" in
+    case ${OCNRES} in
         "025")
-            local nn
-            for ((nn = 1; nn <= 3; nn++)); do
-                mom6_restart_files+=("MOM.res_${nn}.nc")
-            done
+            local nres_files=4
             ;;
-        *) ;;
+        "008")
+            local nres_files=15
+            ;;
+        *)
+            local nres_files=0
+            ;;
     esac
+    if (( nres_files > 0 )); then
+        local nn
+        for ((nn = 1; nn <= nres_files; nn++)); do
+            mom6_restart_file+=("MOM.res_${nn}.nc")
+        done
+    fi
 
     # Build MPMD cmdfile to copy MOM6 restarts in parallel
     local cmdfile="${DATA}/cmdfile_mom6_out"

@@ -531,6 +531,43 @@ if [[ "${skip_mom6}" == "false" ]]; then
       MOM6_ALLOW_LANDMASK_CHANGES='False'
       TOPOEDITS=""
       ;;
+    "008")
+      if [[ "${RUN}" = enkfgdas ]]; then
+        ntasks_mom6=160
+      elif [[ "${RUN}" = gdas ]]; then
+        ntasks_mom6=100
+      elif [[ "${RUN}" = gfs ]]; then
+        ntasks_mom6=240
+      else
+        ntasks_mom6=220
+      fi
+      OCNTIM=1800
+      NX_GLB=1440
+      NY_GLB=1080
+      DT_DYNAM_MOM6='900'
+      DT_THERM_MOM6='1800'
+      FRUNOFF="runoff.daitren.clim.${NX_GLB}x${NY_GLB}.v20180328.nc"
+      CHLCLIM="seawifs-clim-1997-2010.${NX_GLB}x${NY_GLB}.v20180328.nc"
+      MOM6_RIVER_RUNOFF='True'
+      MOM6_RESTART_SETTING="r"
+      eps_imesh="1.0e-1"
+      case ${RUN} in
+        gfs|gefs|sfs|gcafs)
+          MOM6_DIAG_COORD_DEF_Z_FILE="interpolate_zgrid_30L.nc"
+          MOM6_DIAG_MISVAL="-1e34"
+          ;;
+        gdas|enkfgdas|enkfgfs)
+          MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
+          MOM6_DIAG_MISVAL="0.0"
+          ;;
+        *)
+          echo "FATAL ERROR: Unsupported RUN ${RUN} for ${mom6_res}"
+          exit 10
+          ;;
+      esac
+      MOM6_ALLOW_LANDMASK_CHANGES='False'
+      TOPOEDITS=""
+      ;;
     *)
       echo "FATAL ERROR: Unsupported MOM6 resolution = ${mom6_res}, ABORT!"
       exit 1
@@ -578,6 +615,16 @@ if [[ "${skip_cice6}" == "false" ]]; then
       cice6_processor_shape="slenderX2"
       ;;
     "025")
+      if [[ "${RUN}" = gfs ]]; then
+        ntasks_cice6=240
+      elif [[ "${RUN}" = enkfgdas ]]; then
+        ntasks_cice6=40
+      else
+        ntasks_cice6=40
+      fi
+      cice6_processor_shape="slenderX2"
+      ;;
+    "008")
       if [[ "${RUN}" = gfs ]]; then
         ntasks_cice6=240
       elif [[ "${RUN}" = enkfgdas ]]; then
