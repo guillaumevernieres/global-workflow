@@ -53,7 +53,8 @@ class Analysis(Task):
         _ocnres_to_nlev = {'500': 25,
                            '100': 75,
                            '050': 75,
-                           '025': 75}
+                           '025': 75,
+                           '008': 41}
 
         # Extend task_config with variables that are repeatedly used across this class
         self.task_config.update(AttrDict(

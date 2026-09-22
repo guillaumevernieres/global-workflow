@@ -564,7 +564,7 @@ if [[ "${skip_mom6}" == "false" ]]; then
           MOM6_DIAG_MISVAL="-1e34"
           ;;
         gdas|enkfgdas|enkfgfs)
-          MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_75L.nc"
+          MOM6_DIAG_COORD_DEF_Z_FILE="oceanda_zgrid_41L.nc"
           MOM6_DIAG_MISVAL="0.0"
           ;;
         *)
