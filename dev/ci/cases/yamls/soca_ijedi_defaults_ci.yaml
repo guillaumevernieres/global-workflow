@@ -1,0 +1,10 @@
+defaults:
+  !INC {{ HOMEglobal }}/dev/parm/config/gfs/yaml/defaults.yaml
+base:
+  DO_JEDIOCNVAR: "YES"
+  DO_METP: "NO"
+  DO_TEST_MODE: "NO"
+
+marineanl:
+  JEDI_MARINE_INTERFACE: "ijedi"
+  SOCA_NINNER: 1
