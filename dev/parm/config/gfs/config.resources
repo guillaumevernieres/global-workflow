@@ -496,6 +496,23 @@ case ${step} in
     ;;
 
   "marineanlinit")
+    # i-jedi's MOM6 geometry needs an explicit MPI layout whose product is the marineanlvar
+    # task count; the var YAML is rendered by this task, so derive the layout from that step
+    if [[ "${JEDI_MARINE_INTERFACE:-soca}" == "ijedi" ]]; then
+        if ! marineanlvar_ntasks=$(source "${EXPDIR}/config.resources" marineanlvar > /dev/null && echo "${ntasks}"); then
+            echo "FATAL ERROR: Could not determine marineanlvar resources at resolution ${OCNRES}"
+            exit 4
+        fi
+        marine_ijedi_ly=1
+        for ((divisor = 1; divisor * divisor <= marineanlvar_ntasks; divisor++)); do
+            if ((marineanlvar_ntasks % divisor == 0)); then
+                marine_ijedi_ly=${divisor}
+            fi
+        done
+        export layout_marine_ijedi_x=$((marineanlvar_ntasks / marine_ijedi_ly))
+        export layout_marine_ijedi_y=${marine_ijedi_ly}
+    fi
+
     walltime="00:10:00"
     ntasks=1
     threads_per_task=1

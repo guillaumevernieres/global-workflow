@@ -70,6 +70,7 @@ marinebmat:
   SOCA_ANL_GEOM: "${FIXglobal}/gdas/soca/72x35x25/soca"
 
 marineanl:
+  JEDI_MARINE_INTERFACE: "soca"
   SOCA_INPUT_FIX_DIR: "${FIXglobal}/gdas/soca/72x35x25/soca"
   SOCA_ANL_GEOM: "${FIXglobal}/gdas/soca/72x35x25/soca"
   SOCA_OBS_LIST: "${PARMglobal}/gdas/marine/obs/obs_list.yaml.j2"  # TODO: This is also repeated in oceanprepobs

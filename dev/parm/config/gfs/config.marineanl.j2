@@ -15,4 +15,14 @@ export NINNER="{{ SOCA_NINNER }}"
 export OBS_LIST_YAML="{{ SOCA_OBS_LIST }}"
 export TASK_CONFIG_YAML="${PARMglobal}/gdas/marine/marine_det_config.yaml.j2"
 
+# JEDI model interface for the variational solver: soca (default) or ijedi
+# (i-jedi with the MOM6 geometry, ocean only; requires GDASApp built with BUILD_IJEDI=ON)
+export JEDI_MARINE_INTERFACE="{{ JEDI_MARINE_INTERFACE | default('soca') }}"
+
+# The i-jedi MOM6 geometry settings in the GDASApp marine jcb-base exist only for 5 deg (72x35x25)
+if [[ "${JEDI_MARINE_INTERFACE}" == "ijedi" && "${OCNRES}" != "500" ]]; then
+    echo "FATAL ERROR: JEDI_MARINE_INTERFACE=ijedi is only supported at OCNRES=500 (got ${OCNRES})"
+    exit 1
+fi
+
 echo "END: config.marineanl"
