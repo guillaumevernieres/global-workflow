@@ -95,7 +95,7 @@ JEDI marine model interface selection
 When running the JEDI-based marine variational analysis, the model interface used by the
 variational solver can be selected (the default reproduces the current system):
 
-* ``JEDI_MARINE_INTERFACE`` (``marineanl`` section): ``soca`` (default) or ``ijedi``. With
+* ``JEDI_MARINE_INTERFACE`` (``base`` section): ``soca`` (default) or ``ijedi``. With
   ``ijedi``, the marine variational step runs ``gdas_ijedi.x var`` on the i-jedi MOM6 geometry.
   The analysis is ocean only (no sea-ice increment) and is supported only at 5 degree ocean
   resolution (``OCNRES=500``). The MPI layout of the i-jedi MOM6 geometry is derived from the
@@ -103,7 +103,7 @@ variational solver can be selected (the default reproduces the current system):
   the B-matrix jobs can calibrate i-jedi diffusion parameters (soca's cannot be read by i-jedi);
   the B-matrix and increment post-processing steps remain soca-based.
 
-This switch lives in the experiment configs (``config.marineanl``), so changing it requires
+This switch lives in the experiment configs (``config.base``), so changing it requires
 re-running ``setup_expt.py``; it does not adjust the XML.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

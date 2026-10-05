@@ -4,7 +4,7 @@ base:
   DO_JEDIOCNVAR: "YES"
   DO_METP: "NO"
   DO_TEST_MODE: "NO"
+  JEDI_MARINE_INTERFACE: "ijedi"
 
 marineanl:
-  JEDI_MARINE_INTERFACE: "ijedi"
   SOCA_NINNER: 1
