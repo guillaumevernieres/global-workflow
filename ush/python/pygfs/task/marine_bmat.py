@@ -57,9 +57,19 @@ class MarineBMat(Analysis):
         # Extend task_config with content of config yaml for this task
         self.task_config.update(parse_j2yaml(self.task_config.TASK_CONFIG_YAML, self.task_config))
 
+        # The i-jedi interface replaces soca's B-matrix chain with one parameter run and one
+        # diffusion calibration; it has no ensemble/hybrid path yet
+        self.ijedi = self.task_config.get('JEDI_MARINE_INTERFACE', 'soca') == 'ijedi'
+        self.hybrid = self.task_config.DOHYBVAR_OCN == "YES" or self.task_config.NMEM_ENS >= 2
+        if self.ijedi and self.hybrid:
+            raise NotImplementedError("JEDI_MARINE_INTERFACE=ijedi does not support the marine hybrid/ensemble B")
+
         # Create dictionary of Jedi objects
-        expected_keys = ['gridgen', 'soca_diagb', 'soca_parameters_diffusion_vt', 'soca_setcorscales',
-                         'soca_parameters_diffusion_hz', 'soca_ensb', 'soca_ensweights', 'soca_chgres']
+        if self.ijedi:
+            expected_keys = ['gridgen', 'ijedi_bparams', 'ijedi_diffusion']
+        else:
+            expected_keys = ['gridgen', 'soca_diagb', 'soca_parameters_diffusion_vt', 'soca_setcorscales',
+                             'soca_parameters_diffusion_hz', 'soca_ensb', 'soca_ensweights', 'soca_chgres']
         self.jedi_dict = Jedi.get_jedi_dict(self.task_config.jedi_config, self.task_config, expected_keys)
 
     @logit(logger)
@@ -96,18 +106,23 @@ class MarineBMat(Analysis):
                      self.task_config,
                      output_file="./anl_geom/mom_input.nml")
 
+        # initialize JEDI applications
+        self.jedi_dict['gridgen'].initialize()
+        if self.ijedi:
+            self.jedi_dict['ijedi_bparams'].initialize()
+            self.jedi_dict['ijedi_diffusion'].initialize()
+            return
+
         # initialize vtscales python script
         vtscales_config = self.jedi_dict['soca_parameters_diffusion_vt'].render_jcb_template('soca_vtscales')
         save_as_yaml(vtscales_config, os.path.join(self.task_config.DATA, 'soca_vtscales.yaml'))
 
-        # initialize JEDI applications
-        self.jedi_dict['gridgen'].initialize()
         self.jedi_dict['soca_diagb'].initialize()
         self.jedi_dict['soca_chgres'].initialize()
         self.jedi_dict['soca_parameters_diffusion_vt'].initialize()
         self.jedi_dict['soca_setcorscales'].initialize()
         self.jedi_dict['soca_parameters_diffusion_hz'].initialize()
-        if self.task_config.DOHYBVAR_OCN == "YES" or self.task_config.NMEM_ENS >= 2:
+        if self.hybrid:
             self.jedi_dict['soca_ensb'].initialize()
             self.jedi_dict['soca_ensweights'].initialize()
 
@@ -131,6 +146,12 @@ class MarineBMat(Analysis):
         # soca grid generation
         self.jedi_dict['gridgen'].execute()
 
+        if self.ijedi:
+            # scales and parametric stddev, then the diffusion calibration
+            self.jedi_dict['ijedi_bparams'].execute()
+            self.jedi_dict['ijedi_diffusion'].execute()
+            return
+
         # variance partitioning
         self.jedi_dict['soca_diagb'].execute()
 
@@ -151,7 +172,7 @@ class MarineBMat(Analysis):
         self.jedi_dict['soca_parameters_diffusion_vt'].execute()
 
         # hybrid EnVAR case
-        if self.task_config.DOHYBVAR_OCN == "YES" or self.task_config.NMEM_ENS >= 2:
+        if self.hybrid:
             self.jedi_dict['soca_ensb'].execute()
             self.jedi_dict['soca_ensweights'].execute()
 

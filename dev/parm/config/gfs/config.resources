@@ -104,6 +104,26 @@ esac
 
 export max_tasks_per_node
 
+# i-jedi's MOM6 geometry needs an explicit MPI layout whose product is the task count of the step
+# that runs it (an argument); exports layout_marine_ijedi_x/y, the most square factorisation
+set_marine_ijedi_layout() {
+    local run_step=$1
+    local run_ntasks layout_y divisor
+    [[ "${JEDI_MARINE_INTERFACE:-soca}" == "ijedi" ]] || return 0
+    if ! run_ntasks=$(source "${EXPDIR}/config.resources" "${run_step}" > /dev/null && echo "${ntasks}"); then
+        echo "FATAL ERROR: Could not determine ${run_step} resources at resolution ${OCNRES}"
+        exit 4
+    fi
+    layout_y=1
+    for ((divisor = 1; divisor * divisor <= run_ntasks; divisor++)); do
+        if ((run_ntasks % divisor == 0)); then
+            layout_y=${divisor}
+        fi
+    done
+    export layout_marine_ijedi_x=$((run_ntasks / layout_y))
+    export layout_marine_ijedi_y=${layout_y}
+}
+
 case ${step} in
   "prep_sfc")
     walltime='00:08:00'
@@ -496,22 +516,8 @@ case ${step} in
     ;;
 
   "marineanlinit")
-    # i-jedi's MOM6 geometry needs an explicit MPI layout whose product is the marineanlvar
-    # task count; the var YAML is rendered by this task, so derive the layout from that step
-    if [[ "${JEDI_MARINE_INTERFACE:-soca}" == "ijedi" ]]; then
-        if ! marineanlvar_ntasks=$(source "${EXPDIR}/config.resources" marineanlvar > /dev/null && echo "${ntasks}"); then
-            echo "FATAL ERROR: Could not determine marineanlvar resources at resolution ${OCNRES}"
-            exit 4
-        fi
-        marine_ijedi_ly=1
-        for ((divisor = 1; divisor * divisor <= marineanlvar_ntasks; divisor++)); do
-            if ((marineanlvar_ntasks % divisor == 0)); then
-                marine_ijedi_ly=${divisor}
-            fi
-        done
-        export layout_marine_ijedi_x=$((marineanlvar_ntasks / marine_ijedi_ly))
-        export layout_marine_ijedi_y=${marine_ijedi_ly}
-    fi
+    # The var YAML is rendered by this task: lay out i-jedi's MOM6 geometry on the var tasks
+    set_marine_ijedi_layout marineanlvar
 
     walltime="00:10:00"
     ntasks=1
@@ -529,6 +535,8 @@ case ${step} in
     ;;
 
   "marinebmatinit")
+    # The B-matrix YAMLs are rendered by this task: lay out i-jedi's MOM6 geometry on its tasks
+    set_marine_ijedi_layout marinebmat
     walltime="00:20:00"
     ntasks=1
     threads_per_task=1
