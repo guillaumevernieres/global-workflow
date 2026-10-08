@@ -105,9 +105,11 @@ esac
 export max_tasks_per_node
 
 # i-jedi's MOM6 geometry needs an explicit MPI layout whose product is the task count of the step
-# that runs it (an argument); exports layout_marine_ijedi_x/y, the most square factorisation
+# that runs it (first argument); exports layout_marine_ijedi_x/y, or layout_marine_ijedi_<name>_x/y
+# with a second argument, the most square factorisation
 set_marine_ijedi_layout() {
     local run_step=$1
+    local prefix="layout_marine_ijedi${2:+_$2}"
     local run_ntasks layout_y divisor
     [[ "${JEDI_MARINE_INTERFACE:-soca}" == "ijedi" ]] || return 0
     if ! run_ntasks=$(source "${EXPDIR}/config.resources" "${run_step}" > /dev/null && echo "${ntasks}"); then
@@ -120,8 +122,8 @@ set_marine_ijedi_layout() {
             layout_y=${divisor}
         fi
     done
-    export layout_marine_ijedi_x=$((run_ntasks / layout_y))
-    export layout_marine_ijedi_y=${layout_y}
+    export "${prefix}_x=$((run_ntasks / layout_y))"
+    export "${prefix}_y=${layout_y}"
 }
 
 case ${step} in
@@ -516,8 +518,10 @@ case ${step} in
     ;;
 
   "marineanlinit")
-    # The var YAML is rendered by this task: lay out i-jedi's MOM6 geometry on the var tasks
+    # The var and increment postprocessing YAMLs are rendered by this task: lay out i-jedi's MOM6
+    # geometry on the var and marineanlchkpt tasks
     set_marine_ijedi_layout marineanlvar
+    set_marine_ijedi_layout marineanlchkpt chkpt
 
     walltime="00:10:00"
     ntasks=1
