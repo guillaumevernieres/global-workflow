@@ -14,7 +14,9 @@ gdasocean_analysis:
 
         # static background error
         - '{{ COMIN_OCEAN_BMATRIX }}/{{ head }}bkgerr_parametric_stddev.nc'
+        {% if JEDI_MARINE_INTERFACE | default("soca") != "ijedi" %}
         - '{{ COMIN_ICE_BMATRIX }}/{{ head }}bkgerr_parametric_stddev.nc'
+        {% endif %}
 
         # ensemble background error
         {% if NMEM_ENS > 2 %}
@@ -37,15 +39,24 @@ gdasocean_analysis:
         {% endif %}
 
         # runtime configs
+        {% if JEDI_MARINE_INTERFACE | default("soca") == "ijedi" %}
+        # i-jedi: the analysis grid (written by the B-matrix parameter run) and its B-matrix configs
+        - '{{ COMIN_OCEAN_ANALYSIS }}/{{ head }}jedi_gridspec.tm03.nc'
+        - '{{ COMIN_CONF }}/{{ head }}ijedi_bparams.yaml'
+        - '{{ COMIN_CONF }}/{{ head }}ijedi_diffusion.yaml'
+        {% else %}
         - '{{ COMIN_CONF }}/{{ head }}soca_setcorscales.yaml'
         - '{{ COMIN_CONF }}/{{ head }}soca_chgres.yaml'
         - '{{ COMIN_CONF }}/{{ head }}soca_diagb.yaml'
         - '{{ COMIN_CONF }}/{{ head }}gridgen.yaml'
         - '{{ COMIN_CONF }}/{{ head }}soca_vtscales.yaml'
+        {% endif %}
         - '{{ COMIN_CONF }}/{{ head }}bmat_fields_metadata.yaml'
         - '{{ COMIN_CONF }}/var.yaml'
+        {% if JEDI_MARINE_INTERFACE | default("soca") != "ijedi" %}
         # soca_parameters_diffusion_vt, and soca_parameters_diffusion_hz when present
         - '{{ COMIN_CONF }}/{{ head }}soca_parameters_diffusion_??.yaml'
+        {% endif %}
         - '{{ COMIN_CONF }}/soca_incpostproc.yaml'
     optional:
         # obs space diags

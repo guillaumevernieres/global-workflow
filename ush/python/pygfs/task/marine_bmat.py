@@ -66,7 +66,7 @@ class MarineBMat(Analysis):
 
         # Create dictionary of Jedi objects
         if self.ijedi:
-            expected_keys = ['gridgen', 'ijedi_bparams', 'ijedi_diffusion']
+            expected_keys = ['ijedi_bparams', 'ijedi_diffusion']
         else:
             expected_keys = ['gridgen', 'soca_diagb', 'soca_parameters_diffusion_vt', 'soca_setcorscales',
                              'soca_parameters_diffusion_hz', 'soca_ensb', 'soca_ensweights', 'soca_chgres']
@@ -107,11 +107,12 @@ class MarineBMat(Analysis):
                      output_file="./anl_geom/mom_input.nml")
 
         # initialize JEDI applications
-        self.jedi_dict['gridgen'].initialize()
         if self.ijedi:
             self.jedi_dict['ijedi_bparams'].initialize()
             self.jedi_dict['ijedi_diffusion'].initialize()
             return
+
+        self.jedi_dict['gridgen'].initialize()
 
         # initialize vtscales python script
         vtscales_config = self.jedi_dict['soca_parameters_diffusion_vt'].render_jcb_template('soca_vtscales')
@@ -143,14 +144,14 @@ class MarineBMat(Analysis):
         None
         """
 
-        # soca grid generation
-        self.jedi_dict['gridgen'].execute()
-
         if self.ijedi:
-            # scales and parametric stddev, then the diffusion calibration
+            # scales and parametric stddev (also saving the grid), then the diffusion calibration
             self.jedi_dict['ijedi_bparams'].execute()
             self.jedi_dict['ijedi_diffusion'].execute()
             return
+
+        # soca grid generation
+        self.jedi_dict['gridgen'].execute()
 
         # variance partitioning
         self.jedi_dict['soca_diagb'].execute()
