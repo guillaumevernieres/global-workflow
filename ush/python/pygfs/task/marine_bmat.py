@@ -101,16 +101,16 @@ class MarineBMat(Analysis):
                      self.task_config,
                      output_file="mom_input.nml")
 
-        # prepare the input.nml for the analysis geometry
-        parse_j2tmpl(os.path.join(self.task_config.PARMmarine, 'mom_input_anlgeom.nml.j2'),
-                     self.task_config,
-                     output_file="./anl_geom/mom_input.nml")
-
         # initialize JEDI applications
         if self.ijedi:
             self.jedi_dict['ijedi_bparams'].initialize()
             self.jedi_dict['ijedi_diffusion'].initialize()
             return
+
+        # prepare the input.nml for the analysis geometry (soca only: i-jedi works on the native grid)
+        parse_j2tmpl(os.path.join(self.task_config.PARMmarine, 'mom_input_anlgeom.nml.j2'),
+                     self.task_config,
+                     output_file="./anl_geom/mom_input.nml")
 
         self.jedi_dict['gridgen'].initialize()
 

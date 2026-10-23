@@ -128,11 +128,12 @@ class MarineAnalysis(Analysis):
                      self.task_config,
                      output_file="mom_input.nml")
 
-        # prepare the input.nml for the analysis geometry
-        logger.info(f"Preparing analysis geometry input namelist")
-        parse_j2tmpl(os.path.join(self.task_config.PARMmarine, 'mom_input_anlgeom.nml.j2'),
-                     self.task_config,
-                     output_file="./anl_geom/mom_input.nml")
+        # prepare the input.nml for the analysis geometry (soca only: i-jedi works on the native grid)
+        if self.task_config.get('JEDI_MARINE_INTERFACE', 'soca') != 'ijedi':
+            logger.info(f"Preparing analysis geometry input namelist")
+            parse_j2tmpl(os.path.join(self.task_config.PARMmarine, 'mom_input_anlgeom.nml.j2'),
+                         self.task_config,
+                         output_file="./anl_geom/mom_input.nml")
 
         # assert that dates of the history files are correct
         test_hist_date('./INPUT/MOM.res.nc', self.task_config.WINDOW_BEGIN)
