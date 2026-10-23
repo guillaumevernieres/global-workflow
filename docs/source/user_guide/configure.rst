@@ -95,16 +95,28 @@ JEDI marine model interface selection
 When running the JEDI-based marine variational analysis, the model interface used by the
 variational solver can be selected (the default reproduces the current system):
 
-* ``JEDI_MARINE_INTERFACE`` (``base`` section): ``soca`` (default) or ``ijedi``. With
-  ``ijedi``, the marine variational step runs ``gdas_ijedi.x var`` on the i-jedi MOM6 geometry.
-  The analysis is ocean only (no sea-ice increment) and is supported at 5, 1 and 1/4 degree ocean
-  resolution (``OCNRES=500``, ``100`` or ``025``), on the native MOM6 grid (``SOCA_ANL_GEOM`` is not
-  used). The MPI layout of the i-jedi MOM6 geometry is derived from the
-  ``marineanlvar`` task count in ``config.resources``. The ``marinebmat`` job then computes the
-  B-matrix parameters (scales and parametric stddev) and calibrates the diffusion operator on the
-  i-jedi geometry, which gives a univariate diffusion background error (no balance operator yet,
-  and no hybrid/ensemble B). The grid generation and the increment post-processing remain
-  soca-based.
+* ``JEDI_MARINE_INTERFACE`` (``base`` section): ``soca`` (default) or ``ijedi``. ``ijedi``
+  requires GDASApp built with ``BUILD_IJEDI=ON``. With ``ijedi``, the marine B-matrix,
+  variational and increment post-processing steps run on the i-jedi MOM6 geometry, and the
+  analysis covers both the ocean (temperature, salinity, sea surface height) and the sea ice
+  (concentration, ice and snow thickness):
+
+  * ``marinebmat`` runs ``gdas_ijedi_marine_bparams.x`` (horizontal and vertical correlation
+    scales and parametric standard deviations, ocean and sea ice), which also writes the analysis
+    grid, then calibrates the diffusion operator with ``gdas_ijedi.x errortoolbox``. There is no
+    soca grid generation.
+  * ``marineanlvar`` runs ``gdas_ijedi.x var`` with a univariate diffusion background error (no
+    balance operator yet).
+  * ``marineanlchkpt`` runs ``gdas_ijedi_marine_incr_handler.x``, which writes the MOM6 IAU
+    increment and post-processes the sea-ice analysis into the CICE restart.
+
+  The analysis is done on the native MOM6 grid (``SOCA_ANL_GEOM`` is not used) at 5, 1, 1/4 and
+  1/12 degree ocean resolution (``OCNRES=500``, ``100``, ``025`` or ``008``). The i-jedi MOM6
+  geometry needs an MPI layout matching the task count of the step that runs it:
+  ``config.resources`` derives it (the most square factorisation) from the ``marinebmat``,
+  ``marineanlvar`` and ``marineanlchkpt`` task counts, so a step must be launched with the task
+  count ``config.resources`` gives it. The hybrid/ensemble marine B is not supported with
+  ``ijedi`` yet.
 
 This switch lives in the experiment configs (``config.base``), so changing it requires
 re-running ``setup_expt.py``; it does not adjust the XML.
