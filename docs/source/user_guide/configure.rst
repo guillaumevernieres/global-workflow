@@ -97,8 +97,9 @@ variational solver can be selected (the default reproduces the current system):
 
 * ``JEDI_MARINE_INTERFACE`` (``base`` section): ``soca`` (default) or ``ijedi``. With
   ``ijedi``, the marine variational step runs ``gdas_ijedi.x var`` on the i-jedi MOM6 geometry.
-  The analysis is ocean only (no sea-ice increment) and is supported only at 5 degree ocean
-  resolution (``OCNRES=500``). The MPI layout of the i-jedi MOM6 geometry is derived from the
+  The analysis is ocean only (no sea-ice increment) and is supported at 5, 1 and 1/4 degree ocean
+  resolution (``OCNRES=500``, ``100`` or ``025``), on the native MOM6 grid (``SOCA_ANL_GEOM`` is not
+  used). The MPI layout of the i-jedi MOM6 geometry is derived from the
   ``marineanlvar`` task count in ``config.resources``. The ``marinebmat`` job then computes the
   B-matrix parameters (scales and parametric stddev) and calibrates the diffusion operator on the
   i-jedi geometry, which gives a univariate diffusion background error (no balance operator yet,
