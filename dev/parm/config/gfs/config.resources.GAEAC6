@@ -67,7 +67,7 @@ case ${step} in
 
   "marinebmat")
     case ${OCNRES} in
-      "025")
+      "025" | "008")
         tasks_per_node=$(( max_tasks_per_node / 4 ))
         ;;
       *)
